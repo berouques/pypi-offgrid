@@ -1,0 +1,140 @@
+<!-- Navbar -->
+<div style="background-color: #306998;">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+
+
+                <nav class="navbar navbar-expand-lg navbar-dark" style="padding: 15px; background-color: #306998;">
+                    <!-- Logo and Brand Name -->
+                    <span class="navbar-brand">
+                        <i class="fab fa-python"></i> <span class="ml-2 text-light"
+                            style="color: #ffd43b;">pypi-offgrid</span>
+                    </span> 
+                
+                    <!-- Hamburger button -->
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                
+                    <!-- Navigation Links -->
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/">Quick Help</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/settings/">Settings</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/cache_status/">Cache Status</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/simple/">Simple API</a>
+                            </li>
+                        </ul>
+                    </div>
+                
+                    <!-- Offline Mode Switch -->
+                    <div class="ml-auto" style="display: none;">
+                        <form id="offlineModeForm" action="/webapi/set_offline_mode/">
+                            <div class="form-check form-switch text-light">
+                                <label class="form-check-label" for="offlineModeSwitch">Offline Mode</label>
+                                <input class="form-check-input" type="checkbox" role="switch" id="offlineModeSwitch">
+                            </div>
+                        </form>
+                    </div>
+                </nav>
+                
+                
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Add some yellow color to the Python icon and text -->
+<style>
+    .navbar-brand {
+        color: #ffd43b !important;
+        /* Change the color to a shade of yellow */
+    }
+
+    /* Стиль для выключенного состояния (темно-синий) */
+    .form-check-input:not(:checked) {
+        background-color: #418DCC;
+        border-color: #418DCC;
+    }
+
+    /* Стиль для включенного состояния (ярко-желтый) */
+    .form-check-input:checked {
+        background-color: #ffd43b;
+        border-color: #ffd43b;
+    }
+
+    /* Дополнительные стили для красивого переключателя */
+    .form-check-input {
+        width: 40px;
+        height: 20px;
+        border-radius: 20px;
+        position: relative;
+        transition: background-color 0.2s;
+    }
+
+    .form-check-input:before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border-radius: 50%;
+        transition: left 0.2s;
+    }
+
+    .form-check-input:checked:before {
+        left: 20px;
+    }
+</style>
+
+
+<script src="{{ url_for('static', filename='jquery-3.7.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script>
+    $("#offlineModeSwitch").change(function () {
+        var status = $(this).prop('checked') ? 'on' : 'off';
+        $.get("/webapi/set_offline_mode/" + status);
+    });
+</script>
+
+<script>
+    document.getElementById('offlineModeSwitch').addEventListener('change', function () {
+        var form = document.getElementById('offlineModeForm');
+        var request = new XMLHttpRequest();
+        request.open('POST', form.action + this.checked, true);
+        request.send();
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $.get("/webapi/get_offline_mode", function (data) {
+            if (data == "on") {
+                $("#offlineModeSwitch").prop('checked', true);
+            } else {
+                $("#offlineModeSwitch").prop('checked', false);
+            }
+        });
+    });
+</script>

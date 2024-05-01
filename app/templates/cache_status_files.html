@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/5.0.9/css/fontawesome-all.min.css') }}">
+</head>
+
+<body>
+    {% include '_navbar.html' %}
+
+    <!-- Main content -->
+    <div class="container mt-4">
+
+        <h1>Files of project {{project_name}}</h1>
+
+        <table width="100%">
+            <tbody>
+                {% for file_info in project_files_info %}
+                <tr VALIGN=TOP style="background-color: {{ '#BDFFA8' if file_info.file_exists else '#FFD6D6' }}">
+                    <td>{{ file_info.human_file_size  }}</td>
+                    <td><h5>{{ file_info.file_name  }}</h5><small style="color:grey;">{{ file_info.cached_file_path  }}</small></td>
+                    <td>
+                        <a href="{{ file_info.remote_url  }}" target="_blank"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="{{ file_info.proxified_url  }}" target="_blank"><i class="fas fa-server"></i></a>
+                </td>
+            </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+
+
+    {% include '_footer.html' %}
+
+</body>
+
+</html>

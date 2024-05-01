@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cache Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/5.0.9/css/fontawesome-all.min.css') }}">
+    <script src="{{ url_for('static', filename='jquery-3.7.1.min.js') }}"></script>
+
+    <style>
+        .project-table-buttons button {
+            border: 0px;
+            background-color: #306998;
+            color: white;
+        }
+
+        .project-table-buttons button.disabled {
+            border: 0px;
+            background-color: #7EA9CC;
+        }
+
+        #prj-mask-input {
+            width: 300px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            var pageNumber = 1;
+            var itemsPerPage = 20;
+            var prjMask = "*";
+
+            function updateProjectsList() {
+                $.ajax({
+                    url: "/webapi/list_projects/" + itemsPerPage + "/" + pageNumber + "/" + prjMask,
+                    dataType: "json",
+                    success: function (response) {
+                        var projects = response;
+                        var projectTable = $("#project-table");
+                        projectTable.empty();
+                        for (var projectName in projects) {
+                            var projectSummary = projects[projectName];
+                            var row = $("<tr></tr>");
+                            //row.append("<td><button  style='border: 2px solid red; background-color: red; color: white;' class='btn btn-danger delete-project' data-project='" + projectName + "'> <i class='fas fa-trash-alt'></i> </button></td>");
+                            row.append("<td><a href='/cache_status/project_files/" + projectName + "'><button  style='border: 2px solid blue; background-color: blue; color: white;' class='btn project-files'> <i class='fa fa-folder'></i> </button></td>");
+                            row.append("<td style='min-width: 300px;'><a href='/cache_status/" + projectName + "'>"+projectName+"</a></td>");
+                            row.append("<td>"+projectSummary+"</td>");
+                            projectTable.append(row);
+                        }
+
+                        updatePaginationButtons(Object.keys(projects).length < itemsPerPage);
+                    }
+                });
+            }
+
+
+            function updatePaginationButtons(isLastPage) {
+                $(".project-table-buttons button.disabled").prop('disabled', false);
+                $(".project-table-buttons button").removeClass('disabled');
+                $(".project-table-buttons button:first-child").prop('disabled', pageNumber <= 1).toggleClass('disabled', pageNumber <= 1);
+                $(".project-table-buttons button:last-child").prop('disabled', isLastPage).toggleClass('disabled', isLastPage);
+            }
+
+            $(".project-table-buttons button").click(function () {
+                if (!$(this).hasClass('disabled')) {
+                    if ($(this).is(':first-child')) {
+                        pageNumber = 1;
+                    } else {
+                        pageNumber++;
+                    }
+                    updateProjectsList();
+                }
+            });
+
+            $("#prj-mask-input").keyup(function () {
+                prjMask = $(this).val() || "*";
+                pageNumber = 1;
+                updateProjectsList();
+            });
+
+            $("#clear-prj-mask").click(function () {
+                $("#prj-mask-input").val("");
+                prjMask = "*";
+                updateProjectsList();
+            });
+
+            $(document).on("click", ".delete-project", function () {
+                var projectName = $(this).data("project");
+                if (confirm("Are you sure to delete cached files for project " + projectName + "?")) {
+                    $.ajax({
+                        url: "/webapi/delete_cached_files/" + projectName,
+                        success: function (response) {
+                            if (response) {
+                                toastr.success("Files for project " + projectName + " were deleted successfully");
+                            } else {
+                                toastr.error("Error occurred while deleting cached files for project " + projectName);
+                            }
+                        }
+                    });
+                }
+            });
+
+            updateProjectsList();
+        });
+    </script>
+
+</head>
+
+<body>
+    {% include '_navbar.html' %}
+
+    <div class="container">
+
+        <h1>Cache Status</h1>
+
+        <!-- Filter bar -->
+        <div class="input-group mb-3" style="margin-bottom: 30px; margin-bottom: 30px;">
+            <input type="text" id="prj-mask-input" class="form-control" placeholder="Filter projects by name" aria-label="Project filter">
+            <button class="btn btn-outline-dark btn-sm" id="clear-prj-mask"><i class="fas fa-times"></i></button>
+        </div>
+
+
+        <div class="container-fluid d-flex justify-content-between align-items-center project-table-buttons" style="margin-bottom: 30px; margin-bottom: 30px;">
+            <button class="btn btn-outline-dark disabled" style="width: 100px;">Prev</button>
+            <button class="btn btn-outline-dark" style="width: 100px;">Next</button>
+        </div>
+
+        <table id="project-table" class="table">
+            <thead>
+                <tr>
+                    <th width="30px">Action</th>
+                    <th width="150px">Name</th>
+                    <th>Summary</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div class="container-fluid d-flex justify-content-between align-items-center project-table-buttons" style="margin-bottom: 30px; margin-bottom: 30px;">
+            <button class="btn btn-outline-dark disabled" style="width: 100px;">Prev</button>
+            <button class="btn btn-outline-dark" style="width: 100px;">Next</button>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/toastr.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toastr.min.css') }}">
+
+{% include '_footer.html' %}
+</body>
+
+</html>

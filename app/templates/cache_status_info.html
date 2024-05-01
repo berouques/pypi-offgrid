@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="pypi:repository-version" content="1.0">
+    <meta name="generator" content="proxpi">
+    <title>Cache Status for {{ package_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/5.0.9/css/fontawesome-all.min.css') }}">
+    <style>
+        .yanked {
+            color: orange;
+        }
+
+        .project-link {
+            display: flex;
+            align-items: center;
+        }
+
+        .project-link a {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include '_navbar.html' %}
+
+
+    <div style="padding-top: 15px; padding-bottom: 15px;  background-color: #3578A8; color: white; min-height: 200px;">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h2>{{ project_info['name'] }} {{ project_info['version'] }}</h2>
+
+                    <span
+                        style="display: inline-block; background-color: #224A6B; color: white; font-size: 22px; padding: 10px; border-radius: 5px; width: auto; border: 1px #428FCE dashed;">
+                        pip install --index-url {{proxy_server_base_url}}/simple {{ project_info['name'] }}
+                        <button class="btn btn-outline-light" type="button" id="copyButton" style="margin-left: 10px;">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </span>
+
+                    <script>
+                        document.querySelector("#copyButton").addEventListener("click", function () {
+                            var fixedString = "pip install --index-url {{proxy_server_base_url}}/simple {{ project_info['name'] }}";
+                            var tempInput = document.createElement("input");
+                            tempInput.value = fixedString;
+                            document.body.appendChild(tempInput);
+                            tempInput.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(tempInput);
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="display: flex; align-items: center; min-height: 70px; padding-top: 20px; padding-bottom: 20px; background-color: #ECECEC; color: black; border-bottom: 1px #D3D3D3 solid; margin-bottom: 30px;">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <p style="font-family: 'Source Sans Pro', Arial, sans-serif; color: #555; font-size: 20px;">
+                        {{ project_info['summary'] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+
+                <h4>Cache</h4>
+
+                <a href="/cache_status/project_files/{{ project_info['name'] }}"><button  style='border: 2px solid blue; background-color: blue; color: white;' class='btn project-files'> <i class='fa fa-folder'></i> </button></a>
+
+
+                <h4>Maintainers</h4>
+                <ul>
+                    {% if project_info['maintainer'] %}
+                    <li><a href="mailto:{{ project_info['maintainer_email'] }}"><i class="fas fa-envelope"></i>
+                            {{ project_info['maintainer'] }}</a></li>
+                    {% endif %}
+                    {% if project_info['author'] %}
+                    <li><a href="mailto:{{ project_info['author_email'] }}"><i class="fas fa-envelope"></i>
+                            {{ project_info['author'] }}</a></li>
+                    {% endif %}
+                </ul>
+
+                <h4>Project links</h4>
+                <div class="project-link">
+                    {% if project_info['home_page'] %}
+                    <a href="{{ project_info['home_page'] }}"><i class="fa fa-home" aria-hidden="true"></i></a>
+                    {% endif %}
+                    {% if project_info['package_url'] %}
+                    <a href="{{ project_info['package_url'] }}"><i class="fas fa-link"></i></a>
+                    {% endif %}
+                    {% if project_info['release_url'] %}
+                    <a href="{{ project_info['release_url'] }}"><i class="fas fa-link"></i></a>
+                    {% endif %}
+                    {% if project_info['project_url'] %}
+                    <a href="{{ project_info['project_url'] }}"><i class="fas fa-link"></i></a>
+                    {% endif %}
+                    {% if project_info['download_url'] %}
+                    <a href="{{ project_info['download_url'] }}"><i class="fas fa-link"></i></a>
+                    {% endif %}
+                </div>
+
+
+                <h4>Meta Information</h4>
+
+                {% if project_info['yanked'] %}
+                <p class="yanked"><b>YANKED</b></p>
+                {% if project_info['yanked_reason'] != 'none' %}
+                <p class="yanked"><b>Reason:</b> {{ project_info['yanked_reason'] }}</p>
+                {% endif %}
+                {% endif %}
+
+                {% if project_info['license'] %}
+                <p><b>License:</b> {{ project_info['license'] }}</p>
+                {% endif %}
+
+
+                <p><b>Platform:</b> {{ project_info['platform'] }}</p>
+                <p><b>Python version:</b> {{ project_info['requires_python'] }}</p>
+                {% if project_info['requires_dist'] %}
+                <ul>
+                    {% for pkg in project_info['requires_dist'] %}
+                    <li>{{ pkg }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+            </div>
+
+            <div class="col-md-6">
+                <p><b>Description:</b></p>
+                <pre>{{ project_info['description'] }}</pre>
+            </div>
+
+
+        </div>
+    </div>
+
+
+    {% include '_footer.html' %}
+</body>
+
+</html>

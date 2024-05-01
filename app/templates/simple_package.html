@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--- file /templates/package-files.html -->
+    <meta charset="UTF-8">
+    <meta name="pypi:repository-version" content="1.0">
+    <meta name="generator" content="pypi-offgrid">
+    <title>Links for {{ project_name }}</title>
+</head>
+<body>
+    <h1>Links for {{ project_name }}</h1>
+
+    {%- for link_text, link_href in links.items() %}
+        <a href="{{ link_href }}">{{ link_text }}</a><br />
+    {%- endfor %}
+
+</body>
+</html>

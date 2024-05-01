@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report: Delete Package</title>
+</head>
+<body>
+    <h1>Report: Delete Package {{ package_name }}</h1>
+
+    
+    <h2>Database</h2>
+    {% if is_deleted_from_db %}
+        <p>The package {{ package_name }} was successfully deleted from the database.</p>
+    {% else %}
+        <p>The package {{ package_name }} was not deleted from the database because some files could not be deleted.</p>
+    {% endif %}
+
+
+    <h2>Failed to Delete</h2>
+    {% if failed_to_delete %}
+        <ul>
+        {% for file in failed_to_delete %}
+            <li>{{ file }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>All files were successfully deleted.</p>
+    {% endif %}
+
+    <h2>Deleted Files</h2>
+    {% if deleted_files %}
+        <ul>
+        {% for file in deleted_files %}
+            <li>{{ file }}</li>
+        {% endfor %}
+        </ul>
+        <p><strong>Total size deleted:</strong> {{ total_size_deleted }} bytes</p>
+    {% else %}
+        <p>No files were deleted.</p>
+    {% endif %}
+
+
+    <h2>Ignored (not cached) Files</h2>
+    {% if ignored_files %}
+        <ul>
+        {% for file in ignored_files %}
+            <li>{{ file }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No ignored files.</p>
+    {% endif %}
+
+
+
+    {% include '_footer.html' %}
+
+</body>
+</html>

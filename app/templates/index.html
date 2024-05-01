@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/5.0.9/css/fontawesome-all.min.css') }}">
+</head>
+
+<body>
+    {% include '_navbar.html' %}
+
+    <!-- Main content -->
+    <div class="container mt-4">
+
+        <h1>PIP Configuration Instructions</h1>
+
+        <h3>One-time use</h3>
+
+<pre style="background-color: #515151; color: white; padding: 18px;"><code>pip install --trusted-host TODO abox.likov.me --index-url {{ proxy_server_base_url }}/simple simplejson</code></pre>
+
+
+<h3>Permanent configuration</h3>
+
+<p>To have PIP use the proxy server permanently, you must edit the PIP configuration file. The path to the configuration file can be found using the following command</p>
+
+<pre style="background-color: #515151; color: white; padding: 18px;"><code>pip config debug</code></pre>
+
+
+When the path to the configuration file is found, you need to edit it:
+
+<pre style="background-color: #515151; color: white; padding: 18px;"><code># Unix systems
+$ nano ~/.config/pip/pip.conf
+    
+# Windows systems
+PS> notepad C:\Users\YOUR_PROFILE_NAME\AppData\Roaming\pip\pip.ini
+</code></pre>
+
+        <p>And apply the following changes:</p>
+
+        <pre style="background-color: #515151; color: white; padding: 18px;"><code>[global]
+index-url = {{ proxy_server_base_url }}/simple
+extra-index-url = https://pypi.org/simple
+TODO --trusted-host abox.likov.me
+</code></pre>
+
+Thus, in case of proxy server malfunctions, PIP will look for the requested packages in the main PyPI index. To have PIP use only the proxy server, remove the extra-index-url parameter.
+
+
+</div>
+
+
+{% include '_footer.html' %}
+
+</body>
+
+</html>
